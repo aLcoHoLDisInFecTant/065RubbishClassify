@@ -1,0 +1,12 @@
+.env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.venv/
+venv/
+*.pth
+unified_dataset/
+train_log.txt
+garbageClassification.zip
