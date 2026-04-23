@@ -1,13 +1,11 @@
+import os
 import shutil
-import zipfile
 from pathlib import Path
 
-# Directories (project-relative)
-BASE_DIR = Path(__file__).resolve().parent
-DATA_DIR = BASE_DIR / "data"
-SOURCE_DIR_1 = DATA_DIR / "garbage_classification"
-SOURCE_DIR_2 = DATA_DIR / "dataset-resized"
-TARGET_DIR = BASE_DIR / "unified_dataset"
+# Directories
+SOURCE_DIR_1 = Path(r"d:\065创新\garbageClassification\garbage_classification")
+SOURCE_DIR_2 = Path(r"d:\065创新\archive\dataset-resized")
+TARGET_DIR = Path(r"d:\065创新\unified_dataset")
 
 # Mappings
 MAPPING = {
@@ -36,25 +34,7 @@ MAPPING = {
     ]
 }
 
-def ensure_dataset_unzipped() -> None:
-    """Extract datasets in data/ if only zip files are present."""
-    zip_and_target = [
-        (DATA_DIR / "garbageClassification.zip", SOURCE_DIR_1),
-        (DATA_DIR / "archive.zip", SOURCE_DIR_2),
-    ]
-    for zip_path, target_dir in zip_and_target:
-        if target_dir.exists():
-            continue
-        if not zip_path.exists():
-            print(f"Warning: missing both directory and zip for {target_dir.name}")
-            continue
-        print(f"Extracting {zip_path.name} to {DATA_DIR} ...")
-        with zipfile.ZipFile(zip_path, "r") as zf:
-            zf.extractall(DATA_DIR)
-
 def prepare_data():
-    ensure_dataset_unzipped()
-
     if TARGET_DIR.exists():
         shutil.rmtree(TARGET_DIR)
     
