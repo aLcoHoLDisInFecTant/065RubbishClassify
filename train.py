@@ -8,18 +8,12 @@ from pathlib import Path
 import time
 
 def train_model():
-    base_dir = Path(__file__).resolve().parent
-    data_dir = base_dir / "unified_dataset"
+    data_dir = r"d:\065创新\unified_dataset"
     batch_size = 32
     num_epochs = 5
     num_classes = 5
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
-    print(f"Dataset dir: {data_dir}")
-    if not data_dir.exists():
-        raise FileNotFoundError(
-            "unified_dataset not found. Please run `python prepare_data.py` first."
-        )
 
     # Data augmentation and normalization
     data_transforms = {
@@ -37,7 +31,7 @@ def train_model():
         ]),
     }
 
-    full_dataset = datasets.ImageFolder(str(data_dir), transform=data_transforms['train'])
+    full_dataset = datasets.ImageFolder(data_dir, transform=data_transforms['train'])
     
     # Split dataset into train and val
     train_size = int(0.8 * len(full_dataset))
