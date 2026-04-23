@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import torch
@@ -9,10 +9,14 @@ from PIL import Image
 import io
 import json
 import os
+import asyncio
+import urllib.request
+import urllib.error
+import re
 from openai import AsyncOpenAI
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(override=True)
 
 app = FastAPI(title="Garbage Classification System")
 
@@ -30,7 +34,13 @@ model = None
 class_names = []
 api_key = os.getenv("OPENAI_API_KEY")
 base_url = os.getenv("OPENAI_BASE_URL")
-client = AsyncOpenAI(api_key=api_key, base_url=base_url) if api_key and api_key != "your_openai_api_key_here" else None
+openai_model = os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
+use_hkbu_rest = bool(base_url and "/api/v0/rest/deployments/" in base_url)
+client = (
+    AsyncOpenAI(api_key=api_key, base_url=base_url)
+    if api_key and api_key != "your_openai_api_key_here" and not use_hkbu_rest
+    else None
+)
 
 # Define CV transforms
 cv_transforms = transforms.Compose([
@@ -70,10 +80,84 @@ class ClassificationResult(BaseModel):
     instructions: str
     upcycling: str
 
+
+def _extract_json_dict(text: str) -> dict:
+    """Parse JSON from model output, even when wrapped by extra text."""
+    try:
+        return json.loads(text)
+    except Exception:
+        match = re.search(r"\{.*\}", text, flags=re.DOTALL)
+        if match:
+            return json.loads(match.group(0))
+        raise ValueError("No valid JSON found in LLM response")
+
+
+def _hkbu_request_sync(prompt: str) -> dict:
+    payload = {
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": 0.2,
+    }
+    req = urllib.request.Request(
+        base_url,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "Content-Type": "application/json",
+            "api-key": api_key or "",
+        },
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=30) as resp:
+        return json.loads(resp.read().decode("utf-8"))
+
+
+async def generate_recycling_text(prompt: str, label: str) -> tuple[str, str]:
+    if use_hkbu_rest and api_key:
+        try:
+            hkbu_result = await asyncio.to_thread(_hkbu_request_sync, prompt)
+            content = hkbu_result["choices"][0]["message"]["content"]
+            parsed = _extract_json_dict(content)
+            return (
+                parsed.get("instructions", "No instructions generated."),
+                parsed.get("upcycling", "No upcycling ideas generated."),
+            )
+        except Exception as llm_err:
+            print(f"LLM Error: {llm_err}")
+            return (
+                f"Standard recycling procedure for {label}. (Please check HKBU API config)",
+                "Consider reusing it creatively. (Please check HKBU API config)",
+            )
+
+    if client:
+        try:
+            response = await client.chat.completions.create(
+                model=openai_model,
+                messages=[{"role": "user", "content": prompt}],
+                response_format={"type": "json_object"},
+            )
+            parsed = _extract_json_dict(response.choices[0].message.content)
+            return (
+                parsed.get("instructions", "No instructions generated."),
+                parsed.get("upcycling", "No upcycling ideas generated."),
+            )
+        except Exception as llm_err:
+            print(f"LLM Error: {llm_err}")
+            return (
+                f"Standard recycling procedure for {label}. (Please check OpenAI API Key)",
+                "Consider reusing it creatively. (Please check OpenAI API Key)",
+            )
+
+    return (
+        f"Please configure your OpenAI API Key to get detailed instructions for {label}.",
+        "Please configure your OpenAI API Key to get upcycling ideas.",
+    )
+
 @app.post("/classify", response_model=ClassificationResult)
-async def classify_image(file: UploadFile = File(...)):
+async def classify_image(file: UploadFile = File(...), lang: str = Form("en")):
     if not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="File must be an image")
+    lang = (lang or "en").lower()
+    if lang not in {"en", "zh"}:
+        lang = "en"
         
     try:
         # 1. Read image
@@ -91,39 +175,35 @@ async def classify_image(file: UploadFile = File(...)):
         conf_value = confidence.item()
         
         if conf_value < 0.5:
+            low_conf_instructions = (
+                "The image is not clear enough. Please take another picture of the item."
+                if lang == "en"
+                else "图片不够清晰，请重新拍摄后再试。"
+            )
+            low_conf_upcycling = "N/A" if lang == "en" else "不适用"
             return ClassificationResult(
                 label="Unknown",
                 confidence=conf_value,
-                instructions="The image is not clear enough. Please take another picture of the item.",
-                upcycling="N/A"
+                instructions=low_conf_instructions,
+                upcycling=low_conf_upcycling
             )
             
         # 3. LLM Inference
-        prompt = f"""你是一个环保专家。用户上传的垃圾被系统识别为 {label}。
-请提供2-3步简短、明确的回收指导，并提供一个创意升级改造（Upcycling）建议。
-请以JSON格式返回：
+        language_instruction = (
+            "Please respond in English."
+            if lang == "en"
+            else "请使用简体中文回答。"
+        )
+        prompt = f"""You are an environmental expert. The uploaded item is classified as {label}.
+Provide 2-3 short, clear recycling steps and one creative upcycling idea.
+{language_instruction}
+Return only valid JSON in this format:
 {{
-    "instructions": "回收指导文本...",
-    "upcycling": "升级改造建议..."
+    "instructions": "recycling instructions text",
+    "upcycling": "upcycling suggestion text"
 }}"""
         
-        if client:
-            try:
-                response = await client.chat.completions.create(
-                    model="gpt-3.5-turbo",
-                    messages=[{"role": "user", "content": prompt}],
-                    response_format={ "type": "json_object" }
-                )
-                llm_result = json.loads(response.choices[0].message.content)
-                instructions = llm_result.get("instructions", "No instructions generated.")
-                upcycling = llm_result.get("upcycling", "No upcycling ideas generated.")
-            except Exception as llm_err:
-                print(f"LLM Error: {llm_err}")
-                instructions = f"Standard recycling procedure for {label}. (Please check OpenAI API Key)"
-                upcycling = "Consider reusing it creatively. (Please check OpenAI API Key)"
-        else:
-            instructions = f"Please configure your OpenAI API Key to get detailed instructions for {label}."
-            upcycling = "Please configure your OpenAI API Key to get upcycling ideas."
+        instructions, upcycling = await generate_recycling_text(prompt, label)
             
         return ClassificationResult(
             label=label,

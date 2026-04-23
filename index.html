@@ -94,6 +94,12 @@
     <div style="text-align: center;">
         <img id="preview" src="#" alt="Image Preview">
         <br>
+        <label for="lang-select" style="display:block; margin-top:12px; color:#555;">Response Language</label>
+        <select id="lang-select" style="padding:6px 10px; border-radius:4px; border:1px solid #ccc;">
+            <option value="en" selected>English</option>
+            <option value="zh">中文</option>
+        </select>
+        <br>
         <button class="btn" id="upload-btn" onclick="classifyImage()" style="display:none;">Classify</button>
     </div>
 
@@ -131,6 +137,7 @@
 
         const formData = new FormData();
         formData.append("file", fileInput.files[0]);
+        formData.append("lang", document.getElementById("lang-select").value);
 
         document.getElementById('loading').style.display = 'block';
         document.getElementById('result').style.display = 'none';
