@@ -1,0 +1,105 @@
+{
+  "thresholds": [
+    0.3,
+    0.4,
+    0.5,
+    0.6,
+    0.7,
+    0.8,
+    0.9,
+    0.95
+  ],
+  "table": [
+    {
+      "threshold": 0.3,
+      "coverage": 1.0,
+      "selective_accuracy": 0.9338289962825279,
+      "risk": 0.06617100371747209,
+      "overall_accuracy_including_rejected": 0.9338289962825279,
+      "rejection_rate": 0.0,
+      "n_accepted": 1345
+    },
+    {
+      "threshold": 0.4,
+      "coverage": 0.9947955390334573,
+      "selective_accuracy": 0.9379671150971599,
+      "risk": 0.06203288490284009,
+      "overall_accuracy_including_rejected": 0.9330855018587361,
+      "rejection_rate": 0.005204460966542701,
+      "n_accepted": 1338
+    },
+    {
+      "threshold": 0.5,
+      "coverage": 0.9806691449814127,
+      "selective_accuracy": 0.9438968915845337,
+      "risk": 0.056103108415466285,
+      "overall_accuracy_including_rejected": 0.9256505576208178,
+      "rejection_rate": 0.019330855018587334,
+      "n_accepted": 1319
+    },
+    {
+      "threshold": 0.6,
+      "coverage": 0.9405204460966543,
+      "selective_accuracy": 0.9588932806324111,
+      "risk": 0.04110671936758892,
+      "overall_accuracy_including_rejected": 0.9018587360594795,
+      "rejection_rate": 0.059479553903345694,
+      "n_accepted": 1265
+    },
+    {
+      "threshold": 0.7,
+      "coverage": 0.9040892193308551,
+      "selective_accuracy": 0.96875,
+      "risk": 0.03125,
+      "overall_accuracy_including_rejected": 0.8758364312267658,
+      "rejection_rate": 0.09591078066914493,
+      "n_accepted": 1216
+    },
+    {
+      "threshold": 0.8,
+      "coverage": 0.857992565055762,
+      "selective_accuracy": 0.9818024263431543,
+      "risk": 0.01819757365684571,
+      "overall_accuracy_including_rejected": 0.8423791821561338,
+      "rejection_rate": 0.14200743494423795,
+      "n_accepted": 1154
+    },
+    {
+      "threshold": 0.9,
+      "coverage": 0.7650557620817844,
+      "selective_accuracy": 0.9931972789115646,
+      "risk": 0.006802721088435382,
+      "overall_accuracy_including_rejected": 0.7598513011152417,
+      "rejection_rate": 0.23494423791821561,
+      "n_accepted": 1029
+    },
+    {
+      "threshold": 0.95,
+      "coverage": 0.6788104089219331,
+      "selective_accuracy": 0.9978094194961665,
+      "risk": 0.0021905805038334725,
+      "overall_accuracy_including_rejected": 0.6773234200743494,
+      "rejection_rate": 0.3211895910780669,
+      "n_accepted": 913
+    }
+  ],
+  "aurc": 0.00721783981535595,
+  "target_selective_accuracy": 0.97,
+  "recommended_threshold": 0.8,
+  "per_class_auc": {
+    "roc_auc": {
+      "glass": 0.9915697546967139,
+      "metal": 0.995085519696618,
+      "organic": 0.9998927498927499,
+      "paper": 0.9981387835370136,
+      "plastic": 0.9889101114835892
+    },
+    "average_precision": {
+      "glass": 0.9814359226820052,
+      "metal": 0.9689748608094131,
+      "organic": 0.9991634997265363,
+      "paper": 0.9964983765560731,
+      "plastic": 0.9570461801583059
+    }
+  }
+}

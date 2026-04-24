@@ -1,0 +1,143 @@
+{
+  "n_samples": 448,
+  "baseline_accuracy": 0.9441964285714286,
+  "per_perturbation_mean_accuracy": {
+    "gaussian_noise": 0.8221726190476191,
+    "gaussian_blur": 0.8482142857142857,
+    "jpeg_compression": 0.8921130952380952,
+    "brightness": 0.875,
+    "contrast": 0.9055059523809524,
+    "downsample": 0.890625,
+    "rotation": 0.7083333333333334,
+    "center_occlusion": 0.8831845238095237
+  },
+  "most_sensitive": "rotation",
+  "least_sensitive": "contrast",
+  "table": [
+    {
+      "perturbation": "baseline",
+      "severity": "-",
+      "accuracy": 0.9441964285714286
+    },
+    {
+      "perturbation": "gaussian_noise",
+      "severity": "sigma=0.02",
+      "accuracy": 0.8973214285714286
+    },
+    {
+      "perturbation": "gaussian_noise",
+      "severity": "sigma=0.05",
+      "accuracy": 0.8459821428571429
+    },
+    {
+      "perturbation": "gaussian_noise",
+      "severity": "sigma=0.10",
+      "accuracy": 0.7232142857142857
+    },
+    {
+      "perturbation": "gaussian_blur",
+      "severity": "k=3",
+      "accuracy": 0.921875
+    },
+    {
+      "perturbation": "gaussian_blur",
+      "severity": "k=7",
+      "accuracy": 0.84375
+    },
+    {
+      "perturbation": "gaussian_blur",
+      "severity": "k=11",
+      "accuracy": 0.7790178571428571
+    },
+    {
+      "perturbation": "jpeg_compression",
+      "severity": "q=70",
+      "accuracy": 0.9285714285714286
+    },
+    {
+      "perturbation": "jpeg_compression",
+      "severity": "q=40",
+      "accuracy": 0.8883928571428571
+    },
+    {
+      "perturbation": "jpeg_compression",
+      "severity": "q=20",
+      "accuracy": 0.859375
+    },
+    {
+      "perturbation": "brightness",
+      "severity": "f=0.6",
+      "accuracy": 0.9419642857142857
+    },
+    {
+      "perturbation": "brightness",
+      "severity": "f=1.4",
+      "accuracy": 0.8816964285714286
+    },
+    {
+      "perturbation": "brightness",
+      "severity": "f=1.8",
+      "accuracy": 0.8013392857142857
+    },
+    {
+      "perturbation": "contrast",
+      "severity": "f=0.6",
+      "accuracy": 0.9241071428571429
+    },
+    {
+      "perturbation": "contrast",
+      "severity": "f=1.4",
+      "accuracy": 0.9241071428571429
+    },
+    {
+      "perturbation": "contrast",
+      "severity": "f=1.8",
+      "accuracy": 0.8683035714285714
+    },
+    {
+      "perturbation": "downsample",
+      "severity": "128",
+      "accuracy": 0.9241071428571429
+    },
+    {
+      "perturbation": "downsample",
+      "severity": "96",
+      "accuracy": 0.890625
+    },
+    {
+      "perturbation": "downsample",
+      "severity": "64",
+      "accuracy": 0.8571428571428571
+    },
+    {
+      "perturbation": "rotation",
+      "severity": "15deg",
+      "accuracy": 0.6674107142857143
+    },
+    {
+      "perturbation": "rotation",
+      "severity": "30deg",
+      "accuracy": 0.6852678571428571
+    },
+    {
+      "perturbation": "rotation",
+      "severity": "45deg",
+      "accuracy": 0.7723214285714286
+    },
+    {
+      "perturbation": "center_occlusion",
+      "severity": "10%",
+      "accuracy": 0.9040178571428571
+    },
+    {
+      "perturbation": "center_occlusion",
+      "severity": "20%",
+      "accuracy": 0.8950892857142857
+    },
+    {
+      "perturbation": "center_occlusion",
+      "severity": "30%",
+      "accuracy": 0.8504464285714286
+    }
+  ]
+}

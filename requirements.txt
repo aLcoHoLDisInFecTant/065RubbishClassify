@@ -6,3 +6,8 @@ torchvision
 pillow
 openai
 python-dotenv
+scikit-learn
+matplotlib
+seaborn
+pandas
+tqdm
