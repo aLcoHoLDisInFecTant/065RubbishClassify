@@ -99,12 +99,16 @@ async def classify_image(file: UploadFile = File(...)):
             )
             
         # 3. LLM Inference
-        prompt = f"""你是一个环保专家。用户上传的垃圾被系统识别为 {label}。
-请提供2-3步简短、明确的回收指导，并提供一个创意升级改造（Upcycling）建议。
-请以JSON格式返回：
+        prompt = f"""You are an environmental sustainability expert. The waste item uploaded by the user has been identified by the system as: {label}.
+
+Please provide:
+1. 2-3 short and clear recycling/disposal instructions for this item.
+2. One creative upcycling idea to give the item a second life.
+
+Respond ONLY in English, and return your answer strictly in the following JSON format:
 {{
-    "instructions": "回收指导文本...",
-    "upcycling": "升级改造建议..."
+    "instructions": "Step-by-step recycling guidance in English...",
+    "upcycling": "A creative upcycling suggestion in English..."
 }}"""
         
         if client:
