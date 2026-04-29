@@ -10,3 +10,9 @@ venv/
 unified_dataset/
 train_log.txt
 garbageClassification.zip
+
+# Local reports and interview materials
+IEEE_Report.tex
+benchmark/report/实验说明书.md
+项目面试问答梳理.md
+技术架构与底层原理拆解白皮书.md
